@@ -1,0 +1,9 @@
+<a href="http://127.0.0.1:8000/">Home</a>
+<title>Patient registration</title>
+<h1>Save information</h1>
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Submit New Information</button>
+</form>
+<a href="http://127.0.0.1:8000/doctors/todolist.html">Roster duty</a>

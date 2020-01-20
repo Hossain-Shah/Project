@@ -1,0 +1,12 @@
+<a href="http://127.0.0.1:8000/">Home</a>
+<title>Rostered doctor</title>
+<h1>Medication Data</h1>
+<ul>
+  {% for post in object_list %}
+    <h4>Doctor's Job:{{ post.job }}</h4>
+    <h4>Due date:{{ post.due_date }}</h4>
+    <h4>Medication details:{{ post.medication_details }}</h4>
+    <h4>Completed:{{ post.completed }}</h4>
+  {% endfor %}
+  {% csrf_token %}
+</ul>
