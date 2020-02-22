@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html >
+<head>
+  <meta charset="UTF-8">
+  <title>Auto Crop Care Limited</title>
+  {% load static %}
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+   <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+</head>
+<body>
+<div django-app="TaskManager">
+    <div class="container">
+            <div class="content">
+            <h1>Auto Crop Care Limited</h1>
+            <p class="tagline">Document management</p>
+            <form action="" method="post">
+            {% csrf_token %} <!-- csrf token for basic security -->
+                <div class="inputContainer">
+                    <input type="text" id="name_of_product" class="taskName" placeholder="What do you need to do?" name="Product description" required>
+                    <label for="name_of_product">Product description</label>
+                </div>
+                <div class="inputContainer half last">
+                    <i class="fa fa-caret-down selectArrow"></i>
+                    <select id="file_number" class="taskCategory" name="File select">
+                    <option class="disabled" value="">Choose a file</option>
+                    {% for file_number in file_numbers %}
+                        <option class="" value="{{ file_number.name }}" name="{{ file_number.name }}">{{ file_number.name }}</option>
+                    {% endfor %}
+                    </select>
+                    <label for="file_number">File select</label>
+                </div>
+                <div class="inputContainer half last right">
+                    <input type="date" id="expires_on" class="taskDate" name="expires_on">
+                    <label for="expires_on">Expiry date</label>
+                </div>
+                <div class="row">
+                    <button class="taskAdd" name="taskAdd" type="submit"><i class="fa fa-plus icon"></i>Add task</button>
+                    <button class="taskDelete" name="taskDelete" formnovalidate="" type="submit" onclick="$('input#sublist').click();"><i class="fa fa-trash-o icon"></i>Delete Tasks</button>
+                </div>
+            <ul class="taskList">
+            {% for documentlist in documentlists %} <!-- django template lang - for loop -->
+                <li class="taskItem">
+                    <input type="checkbox" class="taskCheckbox" name="checkedbox" id="{{ documentlist.id }}" value="{{ documentlist.id }}">
+                    <label for="{{ documentlist.id }}"><span class="complete-">{{ documentlist.title }}</span></label>
+                    <span class="file_number-{{ documentlist.file_number }}">{{ documentlist.file_number }}</span>
+                    <strong class="taskDate"><i class="fa fa-calendar"></i>{{ documentlist.name_of_product }} - {{ documentlist.expires_on }}</strong>
+                </li>
+            {% endfor %}
+            </ul><!-- taskList -->
+            </form>
+            </div><!-- content -->
+ </div><!-- container -->
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</body>
+</html>
