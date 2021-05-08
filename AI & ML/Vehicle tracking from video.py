@@ -8,6 +8,8 @@ coord=[[637,352],[904,352],[631,512],[952,512]]
 dist = 3
 while True:
     ret, img = cap.read()
+    if ret == False:
+        break
     gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
     cars=car_cascade.detectMultiScale(gray,1.8,2)
     for (x, y, w, h) in cars:
