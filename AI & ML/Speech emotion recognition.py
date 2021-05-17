@@ -61,4 +61,5 @@ model.fit(x_train,y_train)
 y_pred=model.predict(x_test)
 accuracy=accuracy_score(y_true=y_test, y_pred=y_pred)
 print("Accuracy: {:.2f}%".format(accuracy*100))
-
+label = observed_emotions[y_pred.argmax()]
+print(label)
