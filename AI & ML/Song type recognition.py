@@ -12,7 +12,7 @@ from sklearn.metrics import classification_report
 from collections import defaultdict
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
-directory = "D:/Pycharm/Program/AI_Stat_ANN/music_speech"
+directory = "D:/Pycharm/Program/AI_Stat_ANN/genres"
 filelist = []
 for path, subdirs, files in os.walk(directory):
     for file in files:
@@ -32,7 +32,7 @@ def feature_extraction(file):
   return features
 
 
-datasetDirectory = "D:/Pycharm/Program/AI_Stat_ANN/music_speech/"
+datasetDirectory = "D:/Pycharm/Program/AI_Stat_ANN/genres/"
 featureSet = []
 i = 0
 for folder in os.listdir(datasetDirectory):
@@ -78,9 +78,10 @@ audio_file = "file_example_WAV_5MG.wav"
 audio_feature = feature_extraction(audio_file)
 results = defaultdict(int)
 i = 1
-for folder in os.listdir("D:/Pycharm/Program/AI_Stat_ANN/music_speech/"):
+for folder in os.listdir("D:/Pycharm/Program/AI_Stat_ANN/genres/"):
     results[i] = folder
     i += 1
 pred_audio = clf.predict([audio_feature])
 print(results[int(pred_audio)])
+
 
