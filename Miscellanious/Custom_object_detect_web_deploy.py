@@ -1,54 +1,46 @@
-import numpy as np
-import argparse
-import time
 import cv2
-import os
+import numpy as np
 from flask import Flask, request, Response, jsonify
-#import jsonpickle
-#import binascii
-import io as StringIO
-import base64
-from io import BytesIO
 import io
-import json
 from PIL import Image
-# construct the argument parse and parse the arguments
-confthres = 0.3
-nmsthres = 0.1
-#yolo_path = ''
+import os
 
 
-def get_labels(labels_path):
-    # load the COCO class labels our YOLO model was trained on
-    #labelsPath = os.path.sep.join([yolo_path, "yolo_v3/coco.names"])
-    lpath = os.path.sep.join([labels_path])
-    #LABELS = open(lpath).read().strip().split("\n")
-    return lpath
-
-
-def get_colors(LABELS):
-    # initialize a list of colors to represent each possible class label
-    np.random.seed(42)
-    COLORS = np.random.randint(0, 255, size=(len(LABELS), 3), dtype="uint8")
-    return COLORS
-
-
-def get_weights(weights_path):
-    # derive the paths to the YOLO weights and model configuration
-    weightsPath = os.path.sep.join([weights_path])
-    return weightsPath
-
-
-def get_config(config_path):
-    configPath = os.path.sep.join([config_path])
-    return configPath
-
-
-def load_model(configpath, weightspath):
-    # load our YOLO object detector trained on COCO dataset (80 classes)
-    print("[INFO] loading YOLO from disk...")
-    net = cv2.dnn.readNetFromDarknet(configpath, weightspath)
-    return net
+def get_predection(image, net, Lables, COLORS):
+    Width = image.shape[1]
+    Height = image.shape[0]
+    get_output_layers(net)
+    blob = cv2.dnn.blobFromImage(image, scale, (416, 416), (0, 0, 0), True, crop=False)
+    net.setInput(blob)
+    outs = net.forward(get_output_layers(net))
+    class_ids = []
+    confidences = []
+    boxes = []
+    for out in outs:
+        for detection in out:
+            scores = detection[5:]
+            class_id = np.argmax(scores)
+            confidence = scores[class_id]
+            if confidence > 0.5:
+                center_x = int(detection[0] * Width)
+                center_y = int(detection[1] * Height)
+                w = int(detection[2] * Width)
+                h = int(detection[3] * Height)
+                x = center_x - w / 2
+                y = center_y - h / 2
+                class_ids.append(class_id)
+                confidences.append(float(confidence))
+                boxes.append([x, y, w, h])
+    indices = cv2.dnn.NMSBoxes(boxes, confidences, conf_threshold, nms_threshold)
+    for i in indices:
+        i = i[0]
+        box = boxes[i]
+        x = box[0]
+        y = box[1]
+        w = box[2]
+        h = box[3]
+        draw_prediction(image, class_ids[i], confidences[i], round(x), round(y), round(x + w), round(y + h))
+    return image
 
 
 def image_to_byte_array(image: Image):
@@ -58,85 +50,33 @@ def image_to_byte_array(image: Image):
   return imgByteArr
 
 
-def get_predection(image, net, LABELS,COLORS):
-    (H, W) = image.shape[:2]
-    # determine only the *output* layer names that we need from YOLO
-    ln = net.getLayerNames()
-    ln = [ln[i[0] - 1] for i in net.getUnconnectedOutLayers()]
-    # construct a blob from the input image and then perform a forward
-    # pass of the YOLO object detector, giving us our bounding boxes and
-    # associated probabilities
-    blob = cv2.dnn.blobFromImage(image, 1 / 255.0, (416, 416), swapRB=True, crop=False)
-    net.setInput(blob)
-    start = time.time()
-    layerOutputs = net.forward(ln)
-    print(layerOutputs)
-    end = time.time()
-    # show timing information on YOLO
-    print("[INFO] YOLO took {:.6f} seconds".format(end - start))
-    # initialize our lists of detected bounding boxes, confidences, and
-    # class IDs, respectively
-    boxes = []
-    confidences = []
-    classIDs = []
-    # loop over each of the layer outputs
-    for output in layerOutputs:
-        # loop over each of the detections
-        for detection in output:
-            # extract the class ID and confidence (i.e., probability) of
-            # the current object detection
-            scores = detection[5:]
-            # print(scores)
-            classID = np.argmax(scores)
-            # print(classID)
-            confidence = scores[classID]
-            # filter out weak predictions by ensuring the detected
-            # probability is greater than the minimum probability
-            if confidence > confthres:
-                # scale the bounding box coordinates back relative to the
-                # size of the image, keeping in mind that YOLO actually
-                # returns the center (x, y)-coordinates of the bounding
-                # box followed by the boxes' width and height
-                box = detection[0:4] * np.array([W, H, W, H])
-                (centerX, centerY, width, height) = box.astype("int")
-                # use the center (x, y)-coordinates to derive the top and
-                # and left corner of the bounding box
-                x = int(centerX - (width / 2))
-                y = int(centerY - (height / 2))
-                # update our list of bounding box coordinates, confidences,
-                # and class IDs
-                boxes.append([x, y, int(width), int(height)])
-                confidences.append(float(confidence))
-                classIDs.append(classID)
-    # apply non-maxima suppression to suppress weak, overlapping bounding
-    # boxes
-    idxs = cv2.dnn.NMSBoxes(boxes, confidences, confthres, nmsthres)
-    # ensure at least one detection exists
-    if len(idxs) > 0:
-        # loop over the indexes we are keeping
-        for i in idxs.flatten():
-            # extract the bounding box coordinates
-            (x, y) = (boxes[i][0], boxes[i][1])
-            (w, h) = (boxes[i][2], boxes[i][3])
-            # draw a bounding box rectangle and label on the image
-            color = [int(c) for c in COLORS[classIDs[i]]]
-            cv2.rectangle(image, (x, y), (x + w, y + h), color, 2)
-            text = "{}: {:.4f}".format(LABELS[classIDs[i]], confidences[i])
-            print(boxes)
-            print(classIDs)
-            cv2.putText(image, text, (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX,0.5, color, 2)
-    return image
+def get_output_layers(net):
+    layer_names = net.getLayerNames()
+    output_layers = [layer_names[i[0] - 1] for i in net.getUnconnectedOutLayers()]
+    return output_layers
 
 
-labelsPath = "D:/Pycharm/Program/AI_Stat_ANN/coco.names"
-cfgpath = "D:/Pycharm/Program/AI_Stat_ANN/yolov3.cfg"
-wpath = "D:/Pycharm/Program/AI_Stat_ANN/yolov3.weights"
-Lables = get_labels(labelsPath)
-CFG = get_config(cfgpath)
-Weights = get_weights(wpath)
-nets = load_model(CFG, Weights)
-Colors = get_colors(Lables)
-# Initialize the Flask application
+def draw_prediction(img, class_id, confidence, x, y, x_plus_w, y_plus_h):
+    label = str(classes[class_id])
+    color = COLORS[class_id]
+    cv2.rectangle(img, (x, y), (x_plus_w, y_plus_h), color, 2)
+    cv2.putText(img, label, (x - 10, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
+
+
+image = cv2.imread('F:/Photos/Friends & Family(Dhaka)/received_1816118352028837.jpeg')
+scale = 0.00392
+classes = 'D:/Pycharm/Program/AI_Stat_ANN/yolov3.txt'
+weights = 'D:/Pycharm/Program/AI_Stat_ANN/yolov3.weights'
+config = 'D:/Pycharm/Program/AI_Stat_ANN/yolov3.cfg'
+Lables = os.path.sep.join([classes])
+CFG = os.path.sep.join([config])
+Weights = os.path.sep.join([weights])
+with open(classes, 'r') as f:
+    classes = [line.strip() for line in f.readlines()]
+COLORS = np.random.uniform(0, 255, size=(len(Lables), 3))
+net = cv2.dnn.readNet(CFG, Weights)
+conf_threshold = 0.5
+nms_threshold = 0.4
 app = Flask(__name__)
 # route http posts to this method
 @app.route('/api/test', methods=['POST'])
@@ -148,7 +88,7 @@ def main():
     npimg = np.array(img)
     image = npimg.copy()
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    res = get_predection(image, nets, Lables, Colors)
+    res = get_predection(image, net, Lables, COLORS)
     # image=cv2.cvtColor(image,cv2.COLOR_BGR2RGB)
     # show the output image
     #cv2.imshow("Image", res)
@@ -157,8 +97,8 @@ def main():
     np_img = Image.fromarray(image)
     img_encoded = image_to_byte_array(np_img)
     return Response(response=img_encoded, status=200, mimetype="image/jpeg")
-
-
     # start flask app
+
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
