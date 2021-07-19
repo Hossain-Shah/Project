@@ -3,6 +3,8 @@ import imutils
 import numpy as np
 import pytesseract
 from PIL import Image
+from langdetect import detect_langs
+
 
 img = cv2.imread('1.png', cv2.IMREAD_COLOR)
 
@@ -54,7 +56,7 @@ Cropped = gray[topx:bottomx + 1, topy:bottomy + 1]
 # Read the number plate
 text = pytesseract.image_to_string(Cropped, config='')
 print("Detected Number is:", text)
-
+print(detect_langs(text))
 cv2.imshow('image', img)
 cv2.imshow('Cropped', Cropped)
 
