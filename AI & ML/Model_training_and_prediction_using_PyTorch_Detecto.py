@@ -12,17 +12,17 @@ transforms.ColorJitter(saturation=0.2),
 transforms.ToTensor(),
 utils.normalize_transform(),
 ])
-Train_dataset=core.Dataset('C:/Users/MEDINA TECH/Pytorch Detecto model training/Paddy/train/images/',transform=custom_transforms)
-Validation_dataset = core.Dataset('C:/Users/MEDINA TECH/Pytorch Detecto model training/Paddy/validation/images/')
+Train_dataset=core.Dataset('D:/WorkSpace/Q3S7/Pytorch Detecto model training/Paddy/train/images/',transform=custom_transforms)
+Validation_dataset = core.Dataset('D:/WorkSpace/Q3S7/Pytorch Detecto model training/Paddy/validation/images/')
 print(Train_dataset, Validation_dataset)
 loader=core.DataLoader(Train_dataset, batch_size=2, shuffle=True)
 model = core.Model(['Blast', 'False_Smut', 'RiceBug', 'SheathRot', 'StemBorer', 'unrelated_image'])
-losses = model.fit(loader, Validation_dataset, epochs=1, lr_step_size=5, learning_rate=0.001, verbose=True)
+losses = model.fit(loader, Validation_dataset, epochs=25, lr_step_size=5, learning_rate=0.001, verbose=True)
 plt.plot(losses)
 plt.show()
-model.save('C:/Users/MEDINA TECH/Pytorch Detecto model training/Paddy model(Torch Detecto).pth')
-model = core.Model.load('C:/Users/MEDINA TECH/Pytorch Detecto model training/Paddy model(Torch Detecto).pth', ['Blast', 'False_Smut', 'RiceBug', 'SheathRot', 'StemBorer', 'unrelated_image'])
-image = utils.read_image('E:/Official purpose/2021/Sprint - 26/Crop images/rice_blast_233754632_1732789123577441_6836549985591341373_n.jpg') 
+model.save('D:/WorkSpace/Q3S7/Pytorch Detecto model training/rice_faster_rcnn_detecto.pth')
+model = core.Model.load('D:/WorkSpace/Q3S7/Pytorch Detecto model training/rice_faster_rcnn_detecto.pth', ['Blast', 'False_Smut', 'RiceBug', 'SheathRot', 'StemBorer', 'unrelated_image'])
+image = utils.read_image('D:/WorkSpace/Q3S6/Crop images/rice_blast_233754632_1732789123577441_6836549985591341373_n.jpg') 
 predictions = model.predict(image)
 labels, boxes, scores = predictions
 show_labeled_image(image, boxes, labels)
