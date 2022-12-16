@@ -1,0 +1,72 @@
+# from PIL import Image
+from wand.image import Image
+import sys
+import os, os.path
+
+quality = 70
+
+resolutions = {'ldpi': 3, 'mdpi': 4, 'hdpi': 6, 'xhdpi': 8, 'xxhdpi': 12, 'xxxhdpi': 16}
+
+in_scale = 1
+
+
+def resize(img, ratio):
+    global in_scale
+
+    old_width = img.width
+    old_height = img.height
+
+    size = int(old_width * ratio / in_scale), int(old_height * ratio / in_scale)
+    img.resize(size[0], size[1])
+
+    print('resize :', old_width, old_height, ratio, ' => ', size)
+    return img
+
+
+def pngsave(im, file):
+    global quality
+
+    im.save(filename=file)
+
+
+def process(in_file):
+    for key in resolutions:
+        print(key, 'corresponds to', resolutions[key])
+        path = out_folder + '/drawable-' + key
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+        index = in_file.rfind('/')
+        if index > -1:
+            output_file = in_file[index:]
+        else:
+            output_file = in_file
+        output_file = output_file.replace('-', '_')
+        print('processing', in_file, output_file)
+
+        try:
+            with Image(filename=in_file) as img:
+                if key == in_resolution:
+                    print('skipping')
+                else:
+                    img = resize(img, resolutions[key] / float(resolutions[in_resolution]))
+                pngsave(img, path + '/' + output_file)
+        except Exception as e:
+            print("Exception !!! : ", e)
+
+
+if __name__ == '__main__':
+    in_file = 'E:/Official purpose/Sprint - 26/Crop images/Healthy Condition.jpg'
+    in_resolution = "mdpi"
+    out_folder = 'E:/Official purpose/Sprint - 9/Built_in_image_resize/modified/'
+
+    if len(sys.argv) > 4:
+        in_scale = float(sys.argv[4])
+
+    if in_file.endswith('/'):
+        for root, dirs, files in os.walk(in_file[:in_file.rfind('/')]):
+            for file in files:
+                in_file = os.path.join(root, file)
+                process(in_file)
+    else:
+        process(in_file)
