@@ -37,3 +37,40 @@
 -> Database server connection
 -> SEO
 -> Data scraping
+
+## Tech stack:
+-> Tensorflow
+-> Pytorch
+-> Scikit-learn
+-> OpenCV
+-> SpaCy
+-> NLTK
+-> Pandas
+-> Numpy
+-> Matplotlib
+-> Pillow
+-> langchain
+-> Scipy
+-> Scikit-llm
+-> OpenAI
+-> Gym
+-> nemo
+-> librosa
+-> seaborn
+-> kivy
+-> tkinter
+-> folium
+-> django
+-> flask
+-> gradio
+-> streamlit
+-> django-rest-framework
+-> hashlib
+-> BeautifulSoup
+-> smtplib
+-> geopy
+-> pika
+-> pymongo
+-> selenium
+-> express
+-> node-js
