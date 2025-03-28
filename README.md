@@ -14,7 +14,7 @@
 -> Data mining
 -> Data analysis
 
-- Used by Tech stack:
+- Used by ## Tech stack:
 -> Tensorflow
 -> Pytorch
 -> Scikit-learn
@@ -41,7 +41,7 @@
 -> GUI
 -> REST API fetch
    
-- Used by Tech stack:
+- Used by ## Tech stack:
 -> kivy
 -> tkinter
 
@@ -49,14 +49,14 @@
 - This portion is focused on:
 -> Encryption/Decryption
   
-- Used by Tech stack:
+- Used by ## Tech stack:
 -> hashlib
 -> cryptography
   
 |_ Miscellanious:
 - Related to those portions which have several development tree engagement
 
-- Used by Tech stack:
+- Used by ## Tech stack:
 -> folium
 -> django
 -> flask
@@ -75,7 +75,7 @@
 -> SEO
 -> Data scraping
 
-- Used by Tech stack:
+- Used by ## Tech stack:
 -> folium
 -> django
 -> flask
