@@ -14,31 +14,7 @@
 -> Data mining
 -> Data analysis
 
-|_ App_development:
--  This portion deals with:
--> Basic App development operation
--> GUI
--> REST API fetch
-
-|_ Cryptography:
-- This portion is focused on:
--> Encryption/Decryption
-
-|_ Miscellanious:
-- Related to those portions which have several development tree engagement
-
-|_ Web_development:
-- This portion is regarding:
--> Web application projects
--> Blockchain
--> SMTP server
--> 3rd party API integration
--> Broker
--> Database server connection
--> SEO
--> Data scraping
-
-## Tech stack:
+- Used by Tech stack:
 -> Tensorflow
 -> Pytorch
 -> Scikit-learn
@@ -57,13 +33,51 @@
 -> nemo
 -> librosa
 -> seaborn
+
+|_ App_development:
+-  This portion deals with:
+-> Basic App development operation
+-> GUI
+-> REST API fetch
+   
+- Used by Tech stack:
 -> kivy
 -> tkinter
+
+|_ Cryptography:
+- This portion is focused on:
+-> Encryption/Decryption
+  
+- Used by Tech stack:
+-> hashlib
+-> cryptography
+  
+|_ Miscellanious:
+- Related to those portions which have several development tree engagement
+
+- Used by Tech stack:
 -> folium
 -> django
 -> flask
 -> gradio
 -> streamlit
+-> django-rest-framework
+
+|_ Web_development:
+- This portion is regarding:
+-> Web application projects
+-> Blockchain
+-> SMTP server
+-> 3rd party API integration
+-> Broker
+-> Database server connection
+-> SEO
+-> Data scraping
+
+- Used by Tech stack:
+-> folium
+-> django
+-> flask
 -> django-rest-framework
 -> hashlib
 -> BeautifulSoup
