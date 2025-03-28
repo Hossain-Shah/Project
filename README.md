@@ -33,6 +33,7 @@
 -> nemo
 -> librosa
 -> seaborn
+-> pyspark
 
 |_ App_development:
 -  This portion deals with:
